@@ -8,6 +8,8 @@ pandas
 nltk
 tqdm
 PyYAML
+evaluate
+accelerate
 matplotlib
 torch
 notebook
