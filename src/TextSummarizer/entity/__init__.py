@@ -34,8 +34,6 @@ class ModelTrainerConfig:
     per_device_train_batch_size: int
     weight_decay: float
     logging_steps: int
-    eval_strategy: str
-    eval_steps: int
     save_steps: float
     gradient_accumulation_steps: int
 
