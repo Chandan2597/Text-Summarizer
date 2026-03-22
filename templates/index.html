@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Summarizer - AI Powered</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --glass-bg: rgba(30, 41, 59, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --accent-gradient: linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background Orbs */
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: 0;
+            opacity: 0.6;
+            animation: float 20s infinite ease-in-out alternate;
+        }
+
+        .orb-1 {
+            width: 400px;
+            height: 400px;
+            background: rgba(59, 130, 246, 0.4);
+            top: -100px;
+            left: -100px;
+            animation-delay: 0s;
+        }
+
+        .orb-2 {
+            width: 500px;
+            height: 500px;
+            background: rgba(139, 92, 246, 0.3);
+            bottom: -150px;
+            right: -100px;
+            animation-delay: -5s;
+        }
+
+        .orb-3 {
+            width: 300px;
+            height: 300px;
+            background: rgba(236, 72, 153, 0.3);
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation-delay: -10s;
+        }
+
+        @keyframes float {
+            0% { transform: scale(1) translate(0, 0); }
+            33% { transform: scale(1.1) translate(50px, -50px); }
+            66% { transform: scale(0.9) translate(-30px, 40px); }
+            100% { transform: scale(1) translate(0, 0); }
+        }
+
+        /* End Background section */
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            margin: 2rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            letter-spacing: -1px;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            font-weight: 300;
+        }
+
+        /* Glassmorphism Card */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 2.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .glass-panel:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 35px 60px -15px rgba(0, 0, 0, 0.6);
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .textarea-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 1.25rem;
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            color: var(--text-main);
+            font-size: 1.05rem;
+            line-height: 1.6;
+            resize: vertical;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.15);
+            background: rgba(15, 23, 42, 0.6);
+        }
+
+        textarea::placeholder {
+            color: #475569;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: center;
+        }
+
+        button {
+            background: var(--accent-gradient);
+            color: white;
+            border: none;
+            padding: 1rem 2.5rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 9999px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(rgba(255,255,255,0.2), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.5);
+        }
+
+        button:hover::before {
+            opacity: 1;
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Output Section */
+        .output-wrapper {
+            margin-top: 2.5rem;
+            display: none;
+            animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .output-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            gap: 0.5rem;
+        }
+
+        .output-header h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #cbd5e1;
+        }
+
+        .output-content {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 1.5rem;
+            font-size: 1.1rem;
+            line-height: 1.7;
+            color: #f1f5f9;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        .char-count {
+            position: absolute;
+            bottom: 1rem;
+            right: 1.5rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            pointer-events: none;
+        }
+
+        .error-message {
+            color: #ef4444;
+            background: rgba(239, 68, 68, 0.1);
+            border-left: 4px solid #ef4444;
+            padding: 1rem;
+            border-radius: 0 8px 8px 0;
+            margin-top: 1.5rem;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .glass-panel {
+                padding: 1.5rem;
+            }
+            .header h1 {
+                font-size: 2.2rem;
+            }
+            textarea {
+                min-height: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Background Orbs -->
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+
+    <div class="container">
+        <header class="header">
+            <h1>AI Text Summarizer</h1>
+            <p>Distill long texts into concise, meaningful summaries instantly.</p>
+        </header>
+
+        <main class="glass-panel">
+            <div class="input-group">
+                <div class="textarea-wrapper">
+                    <textarea 
+                        id="sourceText" 
+                        placeholder="Paste your long text here to summarize... (e.g., articles, reports, documents)"
+                        spellcheck="false"
+                    ></textarea>
+                    <div class="char-count" id="charCount">0 characters</div>
+                </div>
+
+                <div class="actions">
+                    <button id="summarizeBtn">
+                        <span id="btnText">Generate Summary</span>
+                        <div class="spinner" id="spinner"></div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Error message area -->
+            <div class="error-message" id="errorMessage"></div>
+
+            <!-- Output area -->
+            <div class="output-wrapper" id="outputWrapper">
+                <div class="output-header">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #8b5cf6;">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    <h3>Summary Result</h3>
+                </div>
+                <div class="output-content" id="summaryOutput">
+                    <!-- Summarized text will appear here -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const sourceText = document.getElementById('sourceText');
+        const charCount = document.getElementById('charCount');
+        const summarizeBtn = document.getElementById('summarizeBtn');
+        const btnText = document.getElementById('btnText');
+        const spinner = document.getElementById('spinner');
+        const outputWrapper = document.getElementById('outputWrapper');
+        const summaryOutput = document.getElementById('summaryOutput');
+        const errorMessage = document.getElementById('errorMessage');
+
+        // Character counter
+        sourceText.addEventListener('input', () => {
+            const len = sourceText.value.length;
+            charCount.textContent = `${len.toLocaleString()} character${len !== 1 ? 's' : ''}`;
+        });
+
+        // Main action
+        summarizeBtn.addEventListener('click', async () => {
+            const text = sourceText.value.trim();
+            if (!text) {
+                showError("Please enter some text to summarize.");
+                sourceText.focus();
+                return;
+            }
+
+            // UI Loading state
+            setLoading(true);
+            hideError();
+            outputWrapper.style.display = 'none';
+
+            try {
+                // Send request to the FastAPI backend
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ text: text })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Server error: ${response.status}`);
+                }
+
+                const result = await response.json(); // If backend returns string, we might need text() instead but FastAPI usually encodes returned strings as JSON strings.
+                
+                // Show result
+                let displayResult = typeof result === 'string' ? result : (result.summary || JSON.stringify(result));
+                
+                // Remove surrounding quotes if fastapi returns a JSON string
+                if (displayResult.startsWith('"') && displayResult.endsWith('"')) {
+                    displayResult = displayResult.slice(1, -1);
+                }
+                // Handle unescaped newlines if necessary
+                displayResult = displayResult.replace(/\\n/g, '<br>');
+
+                summaryOutput.innerHTML = displayResult;
+                outputWrapper.style.display = 'block';
+
+                // Scroll to output
+                setTimeout(() => {
+                    outputWrapper.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }, 100);
+
+            } catch (err) {
+                console.error(err);
+                showError("An error occurred while generating the summary. Make sure the backend is running and the document format is supported.");
+            } finally {
+                setLoading(false);
+            }
+        });
+
+        function setLoading(isLoading) {
+            if (isLoading) {
+                summarizeBtn.disabled = true;
+                btnText.textContent = "Summarizing...";
+                spinner.style.display = "block";
+            } else {
+                summarizeBtn.disabled = false;
+                btnText.textContent = "Generate Summary";
+                spinner.style.display = "none";
+            }
+        }
+
+        function showError(msg) {
+            errorMessage.textContent = msg;
+            errorMessage.style.display = 'block';
+        }
+
+        function hideError() {
+            errorMessage.style.display = 'none';
+        }
+    </script>
+</body>
+</html>

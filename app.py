@@ -1,20 +1,25 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 import uvicorn
 import sys
 import os
 from fastapi.templating import Jinja2Templates
 from starlette.responses import RedirectResponse
 from fastapi.responses import Response
+from pydantic import BaseModel
 from TextSummarizer.pipeline.prediction import PredictionPipeline
 
 
 text:str = "What is Text Summarization?"
 
 app = FastAPI()
+templates = Jinja2Templates(directory="templates")
+
+class SummarizeRequest(BaseModel):
+    text: str
 
 @app.get("/", tags=["authentication"])
-async def index():
-    return RedirectResponse(url="/docs")
+async def index(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
 
 
 
@@ -31,11 +36,11 @@ async def training():
 
 
 @app.post("/predict")
-async def predict_route(text):
+async def predict_route(req: SummarizeRequest):
     try:
 
         obj = PredictionPipeline()
-        text = obj.predict(text)
+        text = obj.predict(req.text)
         return text
     except Exception as e:
         raise e
