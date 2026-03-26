@@ -22,11 +22,11 @@ https://github.com/Chandan2597/Text-Summarizer
 ### STEP 01- Create a conda environment after opening the repository
 
 ```bash
-conda create -n summary python=3.8 -y
+conda create -n textsum python=3.8 -y
 ```
 
 ```bash
-conda activate summary
+conda activate textsum
 ```
 
 
